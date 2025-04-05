@@ -9,6 +9,7 @@
     --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
     --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.2);
     --border-radius: 8px;
     --spacing-xs: 0.25rem;
     --spacing-sm: 0.5rem;
@@ -26,8 +27,17 @@
 body {
     font-family: 'Open Sans', sans-serif;
     color: var(--text-dark);
-    background-color: var(--background-light);
     line-height: 1.6;
+    /* Full-height body */
+    min-height: 100vh;
+    /* Set background image */
+    background-image: url('../assets/images/fitnessHero2.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -75,42 +85,58 @@ a:hover {
     border: 2px solid var(--primary-color);
     color: var(--primary-color);
     background: transparent;
+    background-color: rgba(255, 255, 255, 0.9);
 }
 
 .btn-outline:hover {
     background: rgba(66, 135, 245, 0.1);
 }
 
-/* Splash Screen */
+/* App Container - Fullscreen */
 .app-container {
     min-height: 100vh;
+    width: 100vw;
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: rgba(0, 0, 0, 0.5); /* Dark overlay for readability */
 }
 
+/* Splash Screen - Larger size */
 .splash-screen {
-    background: var(--background-white);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+}
+
+.splash-content {
+    /* background: var(--background-white); */
+    background: transparent;
     border-radius: var(--border-radius);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-lg);
     padding: var(--spacing-xl);
     width: 90%;
-    max-width: 500px;
+    max-width: 600px; /* Increased from 500px */
     text-align: center;
+    animation: fadeIn 1s ease-in-out;
 }
 
 .logo-large {
-    width: 120px;
-    margin-bottom: var(--spacing-lg);
+    width: 500px; /* Increased from 120px */
+    /* margin-bottom: var(--spacing-lg); */
 }
 
 .splash-content h1 {
-    color: var(--primary-color);
+    color: blanchedalmond;
+    font-size: 3rem; /* Larger heading */
 }
 
 .splash-content p {
-    margin-bottom: var(--spacing-xl);
-    color: var(--text-light);
+    /* margin-bottom: var(--spacing-xl); */
+    color: blanchedalmond;
+    font-size: 2.5rem; /* Larger text */
 }
 
 .auth-buttons {
@@ -121,17 +147,32 @@ a:hover {
 
 /* Auth Forms */
 .auth-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+}
+
+.auth-form {
     background: var(--background-white);
     border-radius: var(--border-radius);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-lg);
     padding: var(--spacing-xl);
     width: 90%;
-    max-width: 400px;
+    max-width: 500px; /* Increased from 400px */
+    animation: slideIn 0.5s ease-out;
 }
 
 .auth-form h2 {
     text-align: center;
     margin-bottom: var(--spacing-xl);
+    font-size: 2rem; /* Larger heading */
 }
 
 .form-group {
@@ -161,6 +202,23 @@ a:hover {
 /* Utility Classes */
 .hidden {
     display: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { 
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to { 
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 /* Navigation */
@@ -230,5 +288,13 @@ a:hover {
     .btn {
         width: 100%;
         margin-bottom: var(--spacing-sm);
+    }
+    
+    .splash-content {
+        padding: var(--spacing-lg);
+    }
+    
+    .splash-content h1 {
+        font-size: 2rem;
     }
 }
