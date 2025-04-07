@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Tracker - Nutrition</title>
+    <link rel="stylesheet" href="../css/pages/nutrition.css">
+    <link rel="stylesheet" href="../css/nav.css">
+    <link rel="icon" href="../assets/icons/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header will be inserted here -->
+    <div id="header-container"></div>
+
+    <!-- Main content -->
+    <div class="container">
+        <div class="page-header">
+            <h1>Nutrition Tracker</h1>
+            <button id="addMealBtn" class="btn">
+                <i class="fas fa-plus"></i> Add Meal
+            </button>
+        </div>
+
+        <!-- Nutrition Summary -->
+        <div class="nutrition-summary">
+            <div class="card">
+                <h2>Today's Nutrition</h2>
+                <div class="nutrition-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Calories</span>
+                        <span id="caloriesStat" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Protein</span>
+                        <span id="proteinStat" class="stat-value">0g</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Carbs</span>
+                        <span id="carbsStat" class="stat-value">0g</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Fat</span>
+                        <span id="fatStat" class="stat-value">0g</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nutrition Charts -->
+        <div class="nutrition-charts">
+            <div class="card">
+                <h2>Weekly Calories</h2>
+                <div class="chart-container">
+                    <canvas id="caloriesChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <h2>Macronutrient Breakdown</h2>
+                <div class="chart-container">
+                    <canvas id="macrosChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meal Logs -->
+        <div class="meal-logs card">
+            <h2>Meal History</h2>
+            <div id="mealLogsContainer">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin fa-2x"></i>
+                    <p>Loading meal logs...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Meal Modal -->
+        <div id="addMealModal" class="nutrition-modal">
+            <div class="nutrition-modal-content">
+                <span class="nutrition-close-btn">&times;</span>
+                <h2>Add New Meal</h2>
+                <form id="addMealForm">
+                    <div class="nutrition-form-group">
+                        <label for="mealName">Meal Name</label>
+                        <input type="text" id="mealName" required>
+                    </div>
+                    <div class="nutrition-form-group">
+                        <label for="mealCalories">Calories</label>
+                        <input type="number" id="mealCalories" required min="0">
+                    </div>
+                    <div class="nutrition-form-group">
+                        <label for="mealProtein">Protein (g)</label>
+                        <input type="number" id="mealProtein" required min="0" step="0.1">
+                    </div>
+                    <div class="nutrition-form-group">
+                        <label for="mealCarbs">Carbs (g)</label>
+                        <input type="number" id="mealCarbs" required min="0" step="0.1">
+                    </div>
+                    <div class="nutrition-form-group">
+                        <label for="mealFat">Fat (g)</label>
+                        <input type="number" id="mealFat" required min="0" step="0.1">
+                    </div>
+                    <div class="nutrition-form-group">
+                        <label for="mealNotes">Notes (optional)</label>
+                        <textarea id="mealNotes"></textarea>
+                    </div>
+                    <button type="submit" class="btn">Save Meal</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be inserted here -->
+    <div id="footer-container"></div>
+
+    <!-- Charts.js for rendering charts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    
+    <!-- Include partials script -->
+    <script>
+        // Function to load HTML partials
+        async function loadPartial(url, containerId) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Error loading ${url}: ${response.status}`);
+                }
+                const html = await response.text();
+                document.getElementById(containerId).innerHTML = html;
+                
+                // If this is the header, set up event listeners after it's loaded
+                if (containerId === 'header-container') {
+                    const currentPage = 'nutrition.html'; // Set current page
+                
+                    // Highlight the active nav link
+                    const navLinks = document.querySelectorAll('.nav-links a');
+                    navLinks.forEach(link => {
+                        const href = link.getAttribute('href');
+                        if (href && href.includes(currentPage)) {
+                            link.classList.add('active');
+                        }
+                    });
+                
+                    const logoutBtn = document.getElementById('logoutBtn');
+                    if (logoutBtn) {
+                        logoutBtn.addEventListener('click', () => {
+                            window.handleLogout && window.handleLogout();
+                        });
+                    }
+                }
+                
+            } catch (error) {
+                console.error(`Failed to load partial: ${error}`);
+            }
+        }
+
+        // Load the partials
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPartial('../partials/header.html', 'header-container');
+            loadPartial('../partials/footer.html', 'footer-container');
+        });
+    </script>
+    
+    <!-- Main JavaScript -->
+    <script type="module">
+        // Import your modules
+        import { AuthModule } from '../js/modules/auth.js';
+        import { NutritionModule } from '../js/modules/nutrition-module.js';
+    
+        // Initialize modules
+        const auth = new AuthModule();
+        
+        // Make logout function available to the header
+        window.handleLogout = () => {
+            auth.logout();
+        };
+        
+        // Check if user is logged in
+        if (!auth.checkAuthStatus()) {
+            window.location.href = 'index.html'; // Redirect to login page
+        } else {
+            // Initialize nutrition module
+            const nutritionModule = new NutritionModule();
+            
+            // Set up user avatar
+            const currentUser = auth.getCurrentUser();
+            
+            // Function to set up user avatar
+            const setupUserAvatar = () => {
+                const userAvatar = document.getElementById('userAvatar');
+                if (userAvatar && currentUser && currentUser.name) {
+                    userAvatar.textContent = currentUser.name.charAt(0).toUpperCase();
+                }
+            };
+            
+            // Set up avatar initially and when DOM changes
+            setupUserAvatar();
+            
+            // Use a MutationObserver to detect when the header is loaded
+            const observer = new MutationObserver((mutations) => {
+                for (const mutation of mutations) {
+                    if (mutation.type === 'childList') {
+                        setupUserAvatar();
+                    }
+                }
+            });
+            
+            observer.observe(document.getElementById('header-container'), { childList: true });
+            
+            // Initialize page-specific functionality
+            function initNutritionPage() {
+                // Get today's nutrition data
+                const dailyNutrition = nutritionModule.getDailyNutrition();
+                
+                // Update nutrition stats
+                document.getElementById('caloriesStat').textContent = dailyNutrition.calories;
+                document.getElementById('proteinStat').textContent = dailyNutrition.protein + 'g';
+                document.getElementById('carbsStat').textContent = dailyNutrition.carbs + 'g';
+                document.getElementById('fatStat').textContent = dailyNutrition.fat + 'g';
+                
+                // Render meal logs
+                renderMealLogs();
+                
+                // Initialize charts
+                initCharts();
+                
+                // Set up modal functionality
+                setupModal();
+            }
+            
+            // Render meal logs
+            function renderMealLogs() {
+                const mealLogs = nutritionModule.getMealLogs();
+                const mealLogsContainer = document.getElementById('mealLogsContainer');
+                
+                if (mealLogs.length === 0) {
+                    mealLogsContainer.innerHTML = '<p class="no-data">No meal logs found. Add your first meal!</p>';
+                    return;
+                }
+                
+                // Sort meals by date (newest first)
+                const sortedMeals = [...mealLogs].sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                let html = '<div class="meal-list">';
+                sortedMeals.forEach(meal => {
+                    const mealDate = new Date(meal.date).toLocaleDateString();
+                    const mealTime = new Date(meal.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    
+                    html += `
+                        <div class="meal-item">
+                            <div class="meal-header">
+                                <h3>${meal.name || 'Unnamed Meal'}</h3>
+                                <span class="meal-time">${mealDate} at ${mealTime}</span>
+                            </div>
+                            <div class="meal-macros">
+                                <span class="macro-item"><i class="fas fa-fire"></i> ${meal.calories} cal</span>
+                                <span class="macro-item"><i class="fas fa-drumstick-bite"></i> ${meal.protein}g protein</span>
+                                <span class="macro-item"><i class="fas fa-bread-slice"></i> ${meal.carbs}g carbs</span>
+                                <span class="macro-item"><i class="fas fa-cheese"></i> ${meal.fat}g fat</span>
+                            </div>
+                            ${meal.notes ? `<div class="meal-notes">${meal.notes}</div>` : ''}
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                
+                mealLogsContainer.innerHTML = html;
+            }
+            
+            // Initialize charts
+            function initCharts() {
+                // Weekly calories chart
+                const weeklyCalories = nutritionModule.getWeeklyCalories();
+                const caloriesCtx = document.getElementById('caloriesChart').getContext('2d');
+                
+                new Chart(caloriesCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: weeklyCalories.map(data => data.day),
+                        datasets: [{
+                            label: 'Calories',
+                            data: weeklyCalories.map(data => data.calories),
+                            backgroundColor: 'rgba(76, 175, 80, 0.6)',
+                            borderColor: 'rgba(76, 175, 80, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+                
+                // Macronutrient breakdown chart
+                const dailyNutrition = nutritionModule.getDailyNutrition();
+                const macrosCtx = document.getElementById('macrosChart').getContext('2d');
+                
+                new Chart(macrosCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Protein', 'Carbs', 'Fat'],
+                        datasets: [{
+                            data: [dailyNutrition.protein, dailyNutrition.carbs, dailyNutrition.fat],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.6)',
+                                'rgba(54, 162, 235, 0.6)',
+                                'rgba(255, 206, 86, 0.6)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        aspectRatio: 1, // Square aspect ratio for pie chart
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.raw || 0;
+                                        return `${label}: ${value}g`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Set up modal functionality
+            function setupModal() {
+                const modal = document.getElementById('addMealModal');
+                const addMealBtn = document.getElementById('addMealBtn');
+                const closeBtn = document.querySelector('.nutrition-close-btn');
+                const addMealForm = document.getElementById('addMealForm');
+                
+                // Open modal
+                addMealBtn.addEventListener('click', () => {
+                    modal.style.display = 'block';
+                });
+                
+                // Close modal
+                closeBtn.addEventListener('click', () => {
+                    modal.style.display = 'none';
+                });
+                
+                // Close when clicking outside
+                window.addEventListener('click', (event) => {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+                
+                // Handle form submission
+                addMealForm.addEventListener('submit', (event) => {
+                    event.preventDefault();
+                    
+                    const newMeal = {
+                        name: document.getElementById('mealName').value,
+                        calories: parseFloat(document.getElementById('mealCalories').value),
+                        protein: parseFloat(document.getElementById('mealProtein').value),
+                        carbs: parseFloat(document.getElementById('mealCarbs').value),
+                        fat: parseFloat(document.getElementById('mealFat').value),
+                        notes: document.getElementById('mealNotes').value
+                    };
+                    
+                    // Add the meal
+                    nutritionModule.addMealLog(newMeal);
+                    
+                    // Reset form
+                    addMealForm.reset();
+                    
+                    // Close modal
+                    modal.style.display = 'none';
+                    
+                    // Update the UI
+                    const dailyNutrition = nutritionModule.getDailyNutrition();
+                    document.getElementById('caloriesStat').textContent = dailyNutrition.calories;
+                    document.getElementById('proteinStat').textContent = dailyNutrition.protein + 'g';
+                    document.getElementById('carbsStat').textContent = dailyNutrition.carbs + 'g';
+                    document.getElementById('fatStat').textContent = dailyNutrition.fat + 'g';
+                    
+                    // Re-render meal logs and charts
+                    renderMealLogs();
+                    initCharts();
+                });
+            }
+            
+            // Initialize the page
+            initNutritionPage();
+        }
+    </script>
+</body>
+</html>

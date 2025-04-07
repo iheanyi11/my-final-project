@@ -1,0 +1,322 @@
+/* nutrition.css - Styling for the nutrition tracking page */
+
+/* General layout */
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.page-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: #333;
+}
+
+/* Card styling */
+.card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.card h2 {
+    margin-top: 0;
+    font-size: 1.4rem;
+    color: #333;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+/* Button styling - only for nutrition page specific buttons */
+.nutrition-btn {
+    padding: 10px 16px;
+    border-radius: 4px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.nutrition-btn-primary {
+    background-color: #4CAF50; /* Using your existing color scheme */
+    color: white;
+}
+
+.nutrition-btn-primary:hover {
+    background-color: #3e8e41; /* Using your existing hover color */
+}
+
+/* Nutrition summary */
+.nutrition-summary {
+    margin-bottom: 24px;
+}
+
+.nutrition-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #f6f8fa;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #4CAF50; /* Using your existing color scheme */
+}
+
+/* Charts */
+.nutrition-charts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+/* Chart container with constrained proportions */
+.chart-container {
+    position: relative;
+    height: 300px;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+/* Specific chart styling */
+#macrosChart, #caloriesChart {
+    max-height: 300px;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+@media (max-width: 992px) {
+    .nutrition-charts {
+        grid-template-columns: 1fr;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .nutrition-charts {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Meal logs */
+.meal-logs {
+    margin-bottom: 24px;
+}
+
+.meal-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.meal-item {
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #f6f8fa;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.meal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.meal-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.meal-time {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.meal-macros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.macro-item {
+    font-size: 0.9rem;
+    color: #444;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.macro-item i {
+    color: #4CAF50; /* Using your existing color scheme */
+}
+
+.meal-notes {
+    font-size: 0.9rem;
+    color: #666;
+    padding-top: 12px;
+    border-top: 1px solid #e5e5e5;
+}
+
+.no-data {
+    text-align: center;
+    color: #666;
+    padding: 20px;
+    font-style: italic;
+}
+
+/* Loading spinner */
+.loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 0;
+    color: #666;
+}
+
+.loading-spinner i {
+    color: #4CAF50; /* Using your existing color scheme */
+    margin-bottom: 16px;
+}
+
+/* Modal */
+.nutrition-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    overflow: auto;
+}
+
+.nutrition-modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 24px;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.nutrition-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 1.4rem;
+    color: #666;
+    cursor: pointer;
+}
+
+.nutrition-close-btn:hover {
+    color: #333;
+}
+
+.nutrition-modal h2 {
+    margin-top: 0;
+    margin-bottom: 24px;
+    color: #333;
+}
+
+/* Form styling */
+.nutrition-form-group {
+    margin-bottom: 16px;
+}
+
+.nutrition-form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: #444;
+}
+
+.nutrition-form-group input,
+.nutrition-form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+
+.nutrition-form-group textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.nutrition-form-group input:focus,
+.nutrition-form-group textarea:focus {
+    border-color: #4CAF50; /* Using your existing color scheme */
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    
+    .nutrition-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .meal-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .nutrition-modal-content {
+        margin: 5% auto;
+        width: 95%;
+        padding: 16px;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+}

@@ -130,7 +130,9 @@ export class DashboardModule {
                 <!-- Weekly Progress Chart -->
                 <div class="dashboard-card">
                     <h2>Weekly Progress</h2>
-                    <canvas id="weeklyProgressChart"></canvas>
+                    <div style="height: 200px; position: relative;">
+                        <canvas id="weeklyProgressChart"></canvas>
+                    </div>
                 </div>
                 
                 <!-- Goals Tracker -->
@@ -192,7 +194,7 @@ export class DashboardModule {
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
+                maintainAspectRatio: true,
                 plugins: {
                     legend: {
                         display: true,
