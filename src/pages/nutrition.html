@@ -22,6 +22,27 @@
             </button>
         </div>
 
+        <!-- Nutrition API Search -->
+        <div class="card nutrition-search-card">
+            <h2>Food Database Search</h2>
+            <div class="nutrition-container">
+                <div class="search-section">
+                    <input type="text" id="food-search" placeholder="Type to search foods...">
+                    <div id="search-results" class="search-results-container"></div>
+                </div>
+                
+                <div class="nutrition-lookup-section">
+                    <h3>Or Enter Food Directly</h3>
+                    <form id="nutrition-form">
+                        <input type="text" id="nutrition-input" placeholder="Enter food (e.g., '1 apple')">
+                        <button type="submit" class="btn">Get Nutrition</button>
+                    </form>
+                </div>
+                
+                <div id="nutrition-display" class="nutrition-display"></div>
+            </div>
+        </div>
+
         <!-- Nutrition Summary -->
         <div class="nutrition-summary">
             <div class="card">
@@ -209,6 +230,9 @@
             
             // Initialize page-specific functionality
             function initNutritionPage() {
+                // Initialize the Nutritionix API UI components
+                nutritionModule.initUI();
+                
                 // Get today's nutrition data
                 const dailyNutrition = nutritionModule.getDailyNutrition();
                 
@@ -259,6 +283,7 @@
                                 <span class="macro-item"><i class="fas fa-cheese"></i> ${meal.fat}g fat</span>
                             </div>
                             ${meal.notes ? `<div class="meal-notes">${meal.notes}</div>` : ''}
+                            ${meal.serving ? `<div class="meal-serving">Serving: ${meal.serving}</div>` : ''}
                         </div>
                     `;
                 });

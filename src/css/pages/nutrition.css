@@ -72,6 +72,132 @@
     gap: 16px;
 }
 
+/* Nutritionix API search styles */
+.nutrition-search-card {
+    margin-bottom: 20px;
+}
+
+.nutrition-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.search-section, .nutrition-lookup-section {
+    margin-bottom: 15px;
+}
+
+#food-search, #nutrition-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.search-results-container {
+    margin-top: 5px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: white;
+}
+
+.food-results-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.food-results-list li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.food-results-list li:hover {
+    background-color: #f5f5f5;
+}
+
+.nutrition-display {
+    margin-top: 20px;
+}
+
+.nutrition-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-top: 10px;
+}
+
+.nutrition-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.nutrition-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+}
+
+.add-food-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.add-food-btn:hover {
+    background-color: #3e8e41;
+}
+
+.success-message {
+    background-color: #dff0d8;
+    color: #3c763d;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.meal-serving {
+    color: #666;
+    font-style: italic;
+    margin-top: 5px;
+}
+
+@media (min-width: 768px) {
+    .nutrition-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .search-section {
+        flex: 1;
+        min-width: 300px;
+    }
+    
+    .nutrition-lookup-section {
+        flex: 1;
+        min-width: 300px;
+    }
+    
+    .nutrition-display {
+        flex-basis: 100%;
+    }
+}
+
+
 .stat-item {
     display: flex;
     flex-direction: column;
