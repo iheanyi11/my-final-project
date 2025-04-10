@@ -1,6 +1,9 @@
-// Nutritionix API credentials (you'll need to sign up for these)
-const NUTRITIONIX_APP_ID = '0529c9b6';
-const NUTRITIONIX_API_KEY = '22910c10d8c774d06328f260f36829b5';
+// Load environment variables from the .env file
+import dotenv from 'dotenv';
+dotenv.config();
+
+const NUTRITIONIX_APP_ID = process.env.NUTRITIONIX_APP_ID;
+const NUTRITIONIX_API_KEY = process.env.NUTRITIONIX_API_KEY;
 
 // Function to search for food items
 async function searchFoodItems(query) {
