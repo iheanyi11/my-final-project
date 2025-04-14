@@ -81,7 +81,7 @@
         // Import your modules
         import { AuthModule } from '../js/modules/auth.js';
         import { UserModule } from '../js/modules/user-module.js';
-        import { WorkoutModule } from '../js/modules/workout-module.js';
+        import workoutModule from '../js/modules/workout-module.js';
         import { NutritionModule } from '../js/modules/nutrition-module.js';
         import { GoalsModule } from '../js/modules/goals-module.js';
         import { DashboardModule } from '../js/modules/dashboard.js';
@@ -100,7 +100,7 @@
         } else {
             // Initialize other modules
             const userModule = new UserModule();
-            const workoutModule = new WorkoutModule();
+            // const workoutModule = new WorkoutModule();
             const nutritionModule = new NutritionModule();
             const goalsModule = new GoalsModule();
             

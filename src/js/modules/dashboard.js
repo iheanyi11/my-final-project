@@ -16,8 +16,8 @@ export class DashboardModule {
 
         const userData = this.userModule.getUserData();
         const activityData = this.userModule.getActivitySummary();
-        const recentWorkouts = this.workoutModule.getRecentWorkouts(3);
-        const weeklyStats = this.workoutModule.getWeeklyStats();
+        const savedWorkouts = this.workoutModule.displaySavedWorkouts(3);
+        // const weeklyStats = this.workoutModule.getWeeklyStats();
         const nutritionToday = this.nutritionModule.getDailyNutrition();
         const activeGoals = this.goalsModule.getActiveGoals();
 
@@ -54,7 +54,6 @@ export class DashboardModule {
                             <div class="stat-label">Workouts</div>
                         </div>
                         <div class="stat-circle">
-                            <div class="stat-number">${weeklyStats.totalWorkouts}</div>
                             <div class="stat-label">This Week</div>
                         </div>
                         <div class="stat-circle">
@@ -103,28 +102,16 @@ export class DashboardModule {
                     </div>
                 </div>
                 
-                <!-- Recent Workouts -->
-                <div class="dashboard-card">
+                <!-- Replace the existing Recent Workouts section with this code -->
+                <div class="dashboard-section" id="recent-workouts-section">
                     <h2>Recent Workouts</h2>
-                    <div class="recent-workouts">
-                        ${recentWorkouts.length ? 
-                            recentWorkouts.map(workout => `
-                                <div class="workout-item">
-                                    <div class="workout-icon">
-                                        <i class="fas ${this.getWorkoutIcon(workout.type)}"></i>
-                                    </div>
-                                    <div class="workout-details">
-                                        <h3>${workout.name || workout.type}</h3>
-                                        <p>${new Date(workout.date).toLocaleDateString()} • ${workout.duration} min • ${workout.calories} cal</p>
-                                    </div>
-                                </div>
-                            `).join('') : 
-                            '<p class="empty-state">No recent workouts. Time to get moving!</p>'
-                        }
-                        <button class="btn btn-outline" id="addWorkoutBtn">
-                            <i class="fas fa-plus"></i> Add Workout
-                        </button>
+                    <div class="recent-workouts-container" id="recent-workouts-list">
+                        <!-- Workouts will be loaded here dynamically -->
+                        <p class="no-workouts">No recent workouts. Time to get moving!</p>
                     </div>
+                    <button id="dashboard-add-workout" class="primary-btn">
+                        <i class="fas fa-plus"></i> Add Workout
+                    </button>
                 </div>
                 
                 <!-- Weekly Progress Chart -->
