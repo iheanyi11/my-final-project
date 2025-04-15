@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Tracker - Goals</title>
+    <link rel="stylesheet" href="../css/pages/goals.css">
+    <link rel="stylesheet" href="../css/nav.css">
+    <link rel="icon" href="../assets/icons/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header will be inserted here -->
+    <div id="header-container"></div>
+
+    <!-- Main content -->
+    <div class="container">
+        <div class="page-header">
+            <h1>Fitness Goals</h1>
+            <button id="add-goal-btn" class="btn">
+                <i class="fas fa-plus"></i> Add New Goal
+            </button>
+        </div>
+
+        <section class="goals-container">
+            <div class="card">
+                <h2>Active Goals</h2>
+                <p class="section-description">Your top 3 active goals that need attention</p>
+                <div id="active-goals" class="goals-list">
+                    <!-- Active goals will be populated here -->
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin fa-2x"></i>
+                        <p>Loading goals...</p>
+                    </div>
+                </div>
+                <div id="view-all-active" class="view-all-link" style="display: none;">
+                    <a href="#all-goals">View all active goals <i class="fas fa-arrow-down"></i></a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>All Goals</h2>
+                <p class="section-description">Complete history of all your fitness goals</p>
+                <div id="all-goals" class="goals-list">
+                    <!-- All goals will be populated here -->
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin fa-2x"></i>
+                        <p>Loading goals...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Empty state message when no goals exist -->
+        <div id="empty-state" class="empty-state" style="display: none;">
+            <div class="empty-state-content">
+                <i class="fas fa-bullseye empty-icon"></i>
+                <h3>No Fitness Goals Yet</h3>
+                <p>Start tracking your fitness journey by adding your first goal!</p>
+                <button id="empty-add-goal-btn" class="btn">
+                    <i class="fas fa-plus"></i> Create Your First Goal
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal for adding/editing goals -->
+        <div id="goal-modal" class="nutrition-modal">
+            <div class="nutrition-modal-content">
+                <span class="nutrition-close-btn">&times;</span>
+                <h2>Set a New Goal</h2>
+                <form id="goal-form">
+                    <div class="nutrition-form-group">
+                        <label for="goal-type">Goal Type</label>
+                        <select id="goal-type" required>
+                            <option value="weight">Weight</option>
+                            <option value="workout">Workout Sessions</option>
+                            <option value="steps">Daily Steps</option>
+                            <option value="cardio">Cardio Minutes</option>
+                            <option value="strength">Strength Training</option>
+                            <option value="flexibility">Flexibility</option>
+                            <option value="running">Running</option>
+                            <option value="swimming">Swimming</option>
+                            <option value="cycling">Cycling</option>
+                            <option value="calories">Calories</option>
+                            <option value="water">Water Intake</option>
+                            <option value="sleep">Sleep</option>
+                            <option value="meditation">Meditation</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+                    
+                    <div class="nutrition-form-group">
+                        <label for="goal-target">Target Value</label>
+                        <input type="number" id="goal-target" min="1" required>
+                    </div>
+                    
+                    <div class="nutrition-form-group">
+                        <label for="goal-current">Current Value</label>
+                        <input type="number" id="goal-current" min="0" required>
+                    </div>
+                    
+                    <div class="nutrition-form-group">
+                        <label for="goal-unit">Unit</label>
+                        <input type="text" id="goal-unit" placeholder="kg, sessions, steps, minutes, etc." required>
+                    </div>
+                    
+                    <div class="nutrition-form-group">
+                        <label for="goal-deadline">Target Date</label>
+                        <input type="date" id="goal-deadline" required>
+                    </div>
+                    
+                    <button type="submit" class="btn">Save Goal</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal for updating goal progress -->
+        <div id="progress-modal" class="nutrition-modal">
+            <div class="nutrition-modal-content">
+                <span class="nutrition-close-btn">&times;</span>
+                <h2>Update Goal Progress</h2>
+                <form id="progress-form">
+                    <input type="hidden" id="progress-goal-id">
+                    
+                    <div class="nutrition-form-group">
+                        <label for="progress-current">Current Value</label>
+                        <input type="number" id="progress-current" min="0" required>
+                        <span id="progress-unit"></span>
+                    </div>
+                    
+                    <div class="goal-statistics">
+                        <p>Target: <span id="progress-target"></span></p>
+                        <p>Progress: <span id="progress-percentage"></span>%</p>
+                    </div>
+                    
+                    <button type="submit" class="btn">Update Progress</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be inserted here -->
+    <div id="footer-container"></div>
+
+    <!-- Include partials script -->
+    <script>
+        // Function to load HTML partials
+        async function loadPartial(url, containerId) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Error loading ${url}: ${response.status}`);
+                }
+                const html = await response.text();
+                document.getElementById(containerId).innerHTML = html;
+                
+                // If this is the header, set up event listeners after it's loaded
+                if (containerId === 'header-container') {
+                    const currentPage = 'goals.html'; // Set current page
+                
+                    // Highlight the active nav link
+                    const navLinks = document.querySelectorAll('.nav-links a');
+                    navLinks.forEach(link => {
+                        const href = link.getAttribute('href');
+                        if (href && href.includes(currentPage)) {
+                            link.classList.add('active');
+                        }
+                    });
+                
+                    const logoutBtn = document.getElementById('logoutBtn');
+                    if (logoutBtn) {
+                        logoutBtn.addEventListener('click', () => {
+                            window.handleLogout && window.handleLogout();
+                        });
+                    }
+                }
+                
+            } catch (error) {
+                console.error(`Failed to load partial: ${error}`);
+            }
+        }
+
+        // Load the partials
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPartial('../partials/header.html', 'header-container');
+            loadPartial('../partials/footer.html', 'footer-container');
+        });
+    </script>
+    
+    <!-- Main JavaScript -->
+    <script type="module">
+        // Import your modules
+        import { AuthModule } from '../js/modules/auth.js';
+        import { GoalsModule } from '../js/modules/goals-module.js';
+    
+        // Initialize modules
+        const auth = new AuthModule();
+        
+        // Make logout function available to the header
+        window.handleLogout = () => {
+            auth.logout();
+        };
+        
+        // Check if user is logged in
+        if (!auth.checkAuthStatus()) {
+            window.location.href = 'index.html'; // Redirect to login page
+        } else {
+            // Initialize goals module
+            const goalsModule = new GoalsModule();
+            
+            // Set up user avatar
+            const currentUser = auth.getCurrentUser();
+            
+            // Function to set up user avatar
+            const setupUserAvatar = () => {
+                const userAvatar = document.getElementById('userAvatar');
+                if (userAvatar && currentUser && currentUser.name) {
+                    userAvatar.textContent = currentUser.name.charAt(0).toUpperCase();
+                }
+            };
+            
+            // Set up avatar initially and when DOM changes
+            setupUserAvatar();
+            
+            // Use a MutationObserver to detect when the header is loaded
+            const observer = new MutationObserver((mutations) => {
+                for (const mutation of mutations) {
+                    if (mutation.type === 'childList') {
+                        setupUserAvatar();
+                    }
+                }
+            });
+            
+            observer.observe(document.getElementById('header-container'), { childList: true });
+            
+            // Initialize page-specific functionality
+            function initGoalsPage() {
+                // Render goals
+                renderGoals();
+                
+                // Set up modal functionality
+                setupModals();
+                
+                // Setup empty state button
+                const emptyAddGoalBtn = document.getElementById('empty-add-goal-btn');
+                if (emptyAddGoalBtn) {
+                    emptyAddGoalBtn.addEventListener('click', () => {
+                        document.getElementById('goal-modal').style.display = 'block';
+                    });
+                }
+            }
+            
+            // Render all goals
+            function renderGoals() {
+                const activeGoalsContainer = document.getElementById('active-goals');
+                const allGoalsContainer = document.getElementById('all-goals');
+                const emptyState = document.getElementById('empty-state');
+                const viewAllActiveLink = document.getElementById('view-all-active');
+                const goalsContainer = document.querySelector('.goals-container');
+                
+                // Clear containers
+                activeGoalsContainer.innerHTML = '';
+                allGoalsContainer.innerHTML = '';
+                
+                // Get goals
+                const activeGoals = goalsModule.getActiveGoals();
+                const allGoals = goalsModule.getGoals();
+                
+                // Show empty state if no goals exist
+                if (allGoals.length === 0) {
+                    emptyState.style.display = 'block';
+                    goalsContainer.style.display = 'none';
+                    return;
+                } else {
+                    emptyState.style.display = 'none';
+                    goalsContainer.style.display = 'block';
+                }
+                
+                // Render top 3 active goals
+                if (activeGoals.length > 0) {
+                    // Sort active goals by priority (deadline closest first)
+                    const sortedActiveGoals = [...activeGoals].sort((a, b) => {
+                        return new Date(a.deadline) - new Date(b.deadline);
+                    });
+                    
+                    // Display only the top 3 active goals
+                    const topActiveGoals = sortedActiveGoals.slice(0, 3);
+                    
+                    topActiveGoals.forEach(goal => {
+                        activeGoalsContainer.appendChild(createGoalCard(goal));
+                    });
+                    
+                    // Show "View all" link if there are more than 3 active goals
+                    if (activeGoals.length > 3) {
+                        viewAllActiveLink.style.display = 'block';
+                    } else {
+                        viewAllActiveLink.style.display = 'none';
+                    }
+                } else {
+                    activeGoalsContainer.innerHTML = '<p class="no-data">No active goals. Set new goals to track your progress!</p>';
+                    viewAllActiveLink.style.display = 'none';
+                }
+                
+                // Render all goals
+                if (allGoals.length > 0) {
+                    // Sort all goals by creation date (newest first)
+                    const sortedAllGoals = [...allGoals].sort((a, b) => {
+                        return new Date(b.createdAt) - new Date(a.createdAt);
+                    });
+                    
+                    sortedAllGoals.forEach(goal => {
+                        allGoalsContainer.appendChild(createGoalCard(goal));
+                    });
+                } else {
+                    allGoalsContainer.innerHTML = '<p class="no-data">No goals found. Start by adding your first fitness goal!</p>';
+                }
+            }
+            
+            // Create a goal card element
+            function createGoalCard(goal) {
+                const goalCard = document.createElement('div');
+                goalCard.className = 'goal-card';
+                
+                const deadline = new Date(goal.deadline);
+                const formattedDeadline = deadline.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                
+                const daysLeft = Math.ceil((deadline - new Date()) / (1000 * 60 * 60 * 24));
+                
+                // Determine status class
+                let statusClass = '';
+                if (goal.progress >= 100) {
+                    statusClass = 'completed';
+                } else if (daysLeft <= 0) {
+                    statusClass = 'expired';
+                } else if (daysLeft <= 7) {
+                    statusClass = 'urgent';
+                }
+                
+                // Determine status text
+                let statusText = `${daysLeft > 0 ? `${daysLeft} days left` : 'Expired'}`;
+                if (goal.progress >= 100) {
+                    statusText = 'Completed';
+                }
+                
+                goalCard.innerHTML = `
+                    <div class="goal-header ${statusClass}">
+                        <h3>${capitalizeFirstLetter(goal.type)} Goal</h3>
+                        <span class="goal-deadline">
+                            ${statusText}
+                        </span>
+                    </div>
+                    <div class="goal-details">
+                        <p><strong>Target:</strong> ${goal.target} ${goal.unit}</p>
+                        <p><strong>Current:</strong> ${goal.current} ${goal.unit}</p>
+                        <p><strong>Deadline:</strong> ${formattedDeadline}</p>
+                    </div>
+                    <div class="goal-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${goal.progress}%"></div>
+                        </div>
+                        <span class="progress-text">${goal.progress}%</span>
+                    </div>
+                    <div class="goal-actions">
+                        <button class="update-progress-btn" data-goal-id="${goal.id}">
+                            <i class="fas fa-chart-line"></i> Update Progress
+                        </button>
+                        <button class="delete-goal-btn" data-goal-id="${goal.id}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                `;
+                
+                // Add event listener to update progress button
+                goalCard.querySelector('.update-progress-btn').addEventListener('click', () => {
+                    openProgressModal(goal);
+                });
+                
+                // Add event listener to delete button
+                goalCard.querySelector('.delete-goal-btn').addEventListener('click', () => {
+                    if (confirm('Are you sure you want to delete this goal?')) {
+                        goalsModule.deleteGoal(goal.id);
+                        renderGoals();
+                    }
+                });
+                
+                return goalCard;
+            }
+            
+            // Setup modals
+            function setupModals() {
+                const goalModal = document.getElementById('goal-modal');
+                const progressModal = document.getElementById('progress-modal');
+                const addGoalBtn = document.getElementById('add-goal-btn');
+                const closeButtons = document.querySelectorAll('.nutrition-close-btn');
+                const goalForm = document.getElementById('goal-form');
+                const progressForm = document.getElementById('progress-form');
+                
+                // Open modal on add goal button click
+                addGoalBtn.addEventListener('click', () => {
+                    goalModal.style.display = 'block';
+                });
+                
+                // Close modals on X button click
+                closeButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        goalModal.style.display = 'none';
+                        progressModal.style.display = 'none';
+                    });
+                });
+                
+                // Close modal when clicking outside
+                window.addEventListener('click', (event) => {
+                    if (event.target === goalModal) {
+                        goalModal.style.display = 'none';
+                    }
+                    if (event.target === progressModal) {
+                        progressModal.style.display = 'none';
+                    }
+                });
+                
+                // Set min date for goal deadline to today
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('goal-deadline').min = today;
+                
+                // Handle goal form submission
+                goalForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    
+                    const newGoal = {
+                        type: document.getElementById('goal-type').value,
+                        target: parseFloat(document.getElementById('goal-target').value),
+                        current: parseFloat(document.getElementById('goal-current').value),
+                        unit: document.getElementById('goal-unit').value,
+                        deadline: new Date(document.getElementById('goal-deadline').value).toISOString()
+                    };
+                    
+                    goalsModule.addGoal(newGoal);
+                    goalForm.reset();
+                    goalModal.style.display = 'none';
+                    renderGoals();
+                });
+                
+                // Sync unit with goal type
+                document.getElementById('goal-type').addEventListener('change', (e) => {
+                    const unitField = document.getElementById('goal-unit');
+                    switch(e.target.value) {
+                        case 'weight':
+                            unitField.value = 'kg';
+                            break;
+                        case 'workout':
+                            unitField.value = 'sessions';
+                            break;
+                        case 'steps':
+                            unitField.value = 'steps';
+                            break;
+                        case 'cardio':
+                            unitField.value = 'minutes';
+                            break;
+                        case 'strength':
+                            unitField.value = 'reps';
+                            break;
+                        case 'flexibility':
+                            unitField.value = 'minutes';
+                            break;
+                        case 'running':
+                            unitField.value = 'km';
+                            break;
+                        case 'swimming':
+                            unitField.value = 'm';
+                            break;
+                        case 'cycling':
+                            unitField.value = 'km';
+                            break;
+                        case 'calories':
+                            unitField.value = 'kcal';
+                            break;
+                        case 'water':
+                            unitField.value = 'liters';
+                            break;
+                        case 'sleep':
+                            unitField.value = 'hours';
+                            break;
+                        case 'meditation':
+                            unitField.value = 'minutes';
+                            break;
+                        case 'custom':
+                            unitField.value = '';
+                            break;
+                    }
+                });
+                
+                // Handle progress form submission
+                progressForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    
+                    const goalId = parseInt(document.getElementById('progress-goal-id').value);
+                    const newCurrent = parseFloat(document.getElementById('progress-current').value);
+                    
+                    goalsModule.updateGoalProgress(goalId, newCurrent);
+                    progressModal.style.display = 'none';
+                    renderGoals();
+                });
+            }
+            
+            // Open progress update modal
+            function openProgressModal(goal) {
+                document.getElementById('progress-goal-id').value = goal.id;
+                document.getElementById('progress-current').value = goal.current;
+                document.getElementById('progress-unit').textContent = goal.unit;
+                document.getElementById('progress-target').textContent = `${goal.target} ${goal.unit}`;
+                document.getElementById('progress-percentage').textContent = goal.progress;
+                
+                document.getElementById('progress-modal').style.display = 'block';
+            }
+            
+            // Helper function to capitalize first letter
+            function capitalizeFirstLetter(string) {
+                return string.charAt(0).toUpperCase() + string.slice(1);
+            }
+            
+            // Initialize the page
+            initGoalsPage();
+        }
+    </script>
+</body>
+</html>

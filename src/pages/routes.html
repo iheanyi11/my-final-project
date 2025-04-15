@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Tracker - Routes</title>
+    <link rel="stylesheet" href="../css/pages/routes.css">
+    <link rel="stylesheet" href="../css/nav.css">
+    <link rel="icon" href="../assets/icons/favicon.ico">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header will be dynamically loaded -->
+    <div id="header-container"></div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1>Route Mapping for Outdoor Activities</h1>
+            <button id="addRouteBtn" class="btn">
+                <i class="fas fa-plus"></i> Add Route
+            </button>
+        </div>
+
+        <!-- Map Section -->
+        <div class="card map-card">
+            <h2>Map Your Route</h2>
+            <div id="map" class="map-container"></div>
+        </div>
+
+        <!-- Route Summary -->
+        <div class="route-summary">
+            <div class="card">
+                <h2>Saved Routes</h2>
+                <div id="routesListContainer">
+                    <p class="no-data">No routes saved yet. Add your first route!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Route Modal -->
+        <div id="addRouteModal" class="route-modal">
+            <div class="route-modal-content">
+                <span class="route-close-btn">&times;</span>
+                <h2>Add New Route</h2>
+                <form id="addRouteForm">
+                    <div class="route-form-group">
+                        <label for="routeName">Route Name</label>
+                        <input type="text" id="routeName" required>
+                    </div>
+                    <div class="route-form-group">
+                        <label for="routeStart">Start Coordinates (Longitude, Latitude)</label>
+                        <input type="text" id="routeStart" placeholder="e.g., -0.1276,51.5074" required>
+                    </div>
+                    <div class="route-form-group">
+                        <label for="routeEnd">End Coordinates (Longitude, Latitude)</label>
+                        <input type="text" id="routeEnd" placeholder="e.g., 2.3522,48.8566" required>
+                    </div>
+                    <div class="route-form-group">
+                        <label for="routeNotes">Notes (optional)</label>
+                        <textarea id="routeNotes"></textarea>
+                    </div>
+                    <button type="submit" class="btn">Save Route</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer will be dynamically loaded -->
+    <div id="footer-container"></div>
+
+    <!-- Include partials script -->
+    <script>
+        // Function to load HTML partials
+        async function loadPartial(url, containerId) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Error loading ${url}: ${response.status}`);
+                }
+                const html = await response.text();
+                document.getElementById(containerId).innerHTML = html;
+                
+                // If this is the header, set up event listeners after it's loaded
+                if (containerId === 'header-container') {
+                    const currentPage = 'routes.html'; // Set current page
+                
+                    // Highlight the active nav link
+                    const navLinks = document.querySelectorAll('.nav-links a');
+                    navLinks.forEach(link => {
+                        const href = link.getAttribute('href');
+                        if (href && href.includes(currentPage)) {
+                            link.classList.add('active');
+                        }
+                    });
+                
+                    const logoutBtn = document.getElementById('logoutBtn');
+                    if (logoutBtn) {
+                        logoutBtn.addEventListener('click', () => {
+                            window.handleLogout && window.handleLogout();
+                        });
+                    }
+                }
+                
+            } catch (error) {
+                console.error(`Failed to load partial: ${error}`);
+            }
+        }
+
+        // Load the partials
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPartial('../partials/header.html', 'header-container');
+            loadPartial('../partials/footer.html', 'footer-container');
+        });
+    </script>
+    
+    <!-- Main JavaScript -->
+    <script type="module">
+        // Import your modules
+        import { AuthModule } from '../js/modules/auth.js';
+        import { RoutesModule } from '../js/modules/routes-module.js';
+    
+        // Initialize modules
+        const auth = new AuthModule();
+        
+        // Make logout function available to the header
+        window.handleLogout = () => {
+            auth.logout();
+        };
+        
+        // Check if user is logged in
+        if (!auth.checkAuthStatus()) {
+            window.location.href = 'index.html'; // Redirect to login page
+        } else {
+            // Initialize routes module
+            const routesModule = new RoutesModule();
+            
+            // Set up user avatar
+            const currentUser = auth.getCurrentUser();
+            
+            // Function to set up user avatar
+            const setupUserAvatar = () => {
+                const userAvatar = document.getElementById('userAvatar');
+                if (userAvatar && currentUser && currentUser.name) {
+                    userAvatar.textContent = currentUser.name.charAt(0).toUpperCase();
+                }
+            };
+            
+            // Set up avatar initially and when DOM changes
+            setupUserAvatar();
+            
+            // Use a MutationObserver to detect when the header is loaded
+            const observer = new MutationObserver((mutations) => {
+                for (const mutation of mutations) {
+                    if (mutation.type === 'childList') {
+                        setupUserAvatar();
+                    }
+                }
+            });
+            
+            observer.observe(document.getElementById('header-container'), { childList: true });
+        }
+    </script>
+
+   
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+</body>
+</html>

@@ -66,7 +66,6 @@ nav {
   height: 40px;
 }
 
-
 .nav-links {
   display: flex;
   justify-content: center;
@@ -104,8 +103,6 @@ nav {
   background-color: rgba(76, 175, 80, 0.1);
   border-radius: 4px;
 }
-
-
 
 .user-menu {
   display: flex;
@@ -207,6 +204,23 @@ nav {
   text-decoration: underline;
 }
 
+/* Social Media Icons */
+.social-icons {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.social-icons a img {
+  width: 32px;
+  height: 32px;
+  transition: transform 0.3s ease;
+}
+
+.social-icons a img:hover {
+  transform: scale(1.1);
+}
+
 .footer-bottom {
   max-width: 1200px;
   margin: 0 auto;
@@ -220,32 +234,127 @@ nav {
   color: rgba(255, 255, 255, 0.8);
 }
 
-/* Responsive design */
+/* Add these styles to your nav.css */
+
+/* Hamburger button styling */
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
+  padding: 5px;
+}
+
+/* Desktop menu always visible */
+@media screen and (min-width: 769px) {
+  .hamburger-btn {
+    display: none;
+  }
+  
+  .nav-links-container {
+    display: block !important;
+  }
+}
+
+/* Mobile styles */
 @media screen and (max-width: 768px) {
+  /* Your existing mobile styles */
   .header-wrapper nav {
-    flex-direction: column;
-    padding: 15px;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+  }
+  
+  .logo {
+    flex: 1;
+  }
+  
+  .hamburger-btn {
+    display: block;
+    margin-left: auto;
+    margin-right: 15px;
+  }
+  
+  .nav-links-container {
+    width: 100%;
+    order: 3;
+    display: none;
+    margin-top: 10px;
   }
   
   .nav-links {
-    margin: 15px 0;
-    width: 100%;
-    overflow-x: auto;
-    justify-content: flex-start;
-    padding-bottom: 5px;
+    flex-direction: column !important;
+    gap: 0 !important;
+    margin: 0 !important;
+    padding: 10px 0 !important;
+    justify-content: flex-start !important;
+  }
+  
+  .nav-links a {
+    padding: 12px 15px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    width: 100% !important;
+    box-sizing: border-box;
+    justify-content: flex-start !important;
   }
   
   .user-menu {
-    width: 100%;
-    justify-content: space-between;
-    margin-top: 10px;
+    order: 2;
+    width: auto !important;
+    margin-top: 0 !important;
+  }
+  
+  /* Enhanced footer styles for mobile */
+  .footer {
+    padding: 20px 0 10px; /* Reduced top and bottom padding */
+    margin-top: 30px; /* Less margin above footer */
   }
   
   .footer-content {
     flex-direction: column;
+    padding: 0 15px; /* Smaller horizontal padding */
   }
   
   .footer-section {
     padding-right: 0;
+    margin-bottom: 15px; /* Reduced margin between sections */
+    min-width: 100%; /* Force full width */
+  }
+
+  .footer-section h4 {
+    font-size: 1rem; /* Smaller heading */
+    margin-bottom: 8px;
+    padding-bottom: 5px;
+  }
+
+  .footer-section p {
+    font-size: 0.85rem; /* Smaller paragraph text */
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+
+  .footer-section ul li {
+    margin-bottom: 4px; /* Less space between list items */
+  }
+
+  .social-icons {
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .social-icons a img {
+    width: 24px; /* Even smaller icons */
+    height: 24px;
+  }
+  
+  .footer-bottom {
+    padding-top: 10px; /* Less padding above copyright */
+  }
+  
+  .footer-bottom p {
+    font-size: 0.8rem; /* Smaller copyright text */
+    margin: 5px 0; /* Reduce margin */
   }
 }

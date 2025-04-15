@@ -1,19 +1,30 @@
 <div class="header-wrapper">
     <nav>
+        <!-- Logo -->
         <div class="logo">
             <a href="dashboard.html">
                 <i class="fas fa-heartbeat"></i>
                 <span>Fitness Tracker</span>
             </a>
         </div>
-        <div class="nav-links">
-            <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
-            <a href="workouts.html"><i class="fas fa-dumbbell"></i> Workouts</a>
-            <a href="nutrition.html"><i class="fas fa-apple-alt"></i> Nutrition</a>
-            <a href="goals.html"><i class="fas fa-bullseye"></i> Goals</a>
-            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
-            <a href="routes.html"><i class="fas fa-map"></i> Routes</a>
+
+        <!-- Hamburger Button -->
+        <button class="hamburger-btn" id="hamburgerButton" aria-label="Open Navigation">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Navigation Links -->
+        <div class="nav-links-container" id="navLinksContainer">
+            <div class="nav-links">
+                <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+                <a href="workouts.html"><i class="fas fa-dumbbell"></i> Workouts</a>
+                <a href="nutrition.html"><i class="fas fa-apple-alt"></i> Nutrition</a>
+                <a href="goals.html"><i class="fas fa-bullseye"></i> Goals</a>
+                <a href="routes.html"><i class="fas fa-map"></i> Routes</a>
+            </div>
         </div>
+
+        <!-- User Menu -->
         <div class="user-menu">
             <a href="#" id="logoutBtn" class="btn btn-sm">
                 <i class="fas fa-sign-out-alt"></i>
@@ -25,3 +36,38 @@
         </div>
     </nav>
 </div>
+
+<script>
+    // Wait for a brief moment to ensure the DOM is fully processed
+    setTimeout(function() {
+        // Get the elements by ID for more reliable selection
+        var hamburgerButton = document.getElementById('hamburgerButton');
+        var navLinksContainer = document.getElementById('navLinksContainer');
+        
+        // Set initial state for mobile
+        if (window.innerWidth <= 768) {
+            navLinksContainer.style.display = 'none';
+        }
+        
+        // Add click event directly
+        hamburgerButton.onclick = function() {
+            console.log('Hamburger clicked');
+            if (navLinksContainer.style.display === 'none' || navLinksContainer.style.display === '') {
+                navLinksContainer.style.display = 'block';
+                hamburgerButton.innerHTML = '<i class="fas fa-times"></i>';
+            } else {
+                navLinksContainer.style.display = 'none';
+                hamburgerButton.innerHTML = '<i class="fas fa-bars"></i>';
+            }
+        };
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                navLinksContainer.style.display = '';
+            } else if (navLinksContainer.style.display !== 'block') {
+                navLinksContainer.style.display = 'none';
+            }
+        });
+    }, 100);
+</script>
